@@ -47,9 +47,9 @@ class WassersteinGAN(object):
         self.d_loss_reg = self.d_loss + self.reg
 
         with tf.control_dependencies(tf.get_collection(tf.GraphKeys.UPDATE_OPS)):
-            self.d_rmsprop = tf.train.RMSPropOptimizer(learning_rate=5e-5)\
+            self.d_rmsprop = tf.train.RMSPropOptimizer(learning_rate=2e-5)\
                 .minimize(self.d_loss_reg, var_list=self.d_net.vars)
-            self.g_rmsprop = tf.train.RMSPropOptimizer(learning_rate=5e-5)\
+            self.g_rmsprop = tf.train.RMSPropOptimizer(learning_rate=2e-5)\
                 .minimize(self.g_loss_reg, var_list=self.g_net.vars)        
 
         self.d_clip = [v.assign(tf.clip_by_value(v, -0.01, 0.01)) for v in self.d_net.vars]
@@ -66,12 +66,12 @@ class WassersteinGAN(object):
         return x*kappa + (x+epsilon)*( max_val/(x+epsilon) + logsumexp( (dta - max_val)/(x+epsilon) )  )
 
 
-    def train(self, num_batches=1000000):
+    def train(self, num_batches=100000):
         plt.ion()
         self.sess.run(tf.global_variables_initializer())
         start_time = time.time()
         for t in range(0, num_batches):
-            d_iters = 5
+            d_iters = 10
             if t % 500 == 0 or t < 25:
                  d_iters = 100
 
